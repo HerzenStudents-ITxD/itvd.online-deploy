@@ -1,0 +1,305 @@
+version: '3.4'
+
+services:
+#  testsqlclient:
+#    container_name: sql-client
+#    image: mcr.microsoft.com/mssql-tools
+#    command: /bin/bash -c '/opt/mssql-tools/bin/sqlcmd -S sqlserver_db -U SA -P User_1234 -d master -Q "SELECT @@VERSION"'
+#    networks:
+#      - default
+#    depends_on:
+#      - sqlserver_db
+      
+  sqlserver_db:
+    container_name: sqlserver_db
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    platform: linux/amd64
+    restart: always
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "User_1234"
+    ports:
+      - 1433:1433
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "$$SA_PASSWORD" -Q "SELECT 1" || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+    networks:
+      - default
+
+  seq:
+    platform: linux/amd64
+    image: datalust/seq:latest
+    container_name: seq
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - 5341:80
+    networks:
+      - default
+
+  rabbitmq:
+    platform: linux/amd64
+   # login guest:guest
+#    image: rabbitmq:3-management
+    hostname: "rabbitmq"
+    container_name: rabbitmq
+    labels:
+      NAME: "rabbitmq"
+    build:
+      context: ./rabbitmq
+      dockerfile: Dockerfile
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_NODENAME=rabbit@rabbitmq
+      - seqServerUrl=http://seq
+      - seqApiKey=9xXtgAh5JiClaAE1Fow5
+    ports:
+      - "4370:4369"
+      - "5671:5671"
+      - "5672:5672"
+      - "25672:25672"
+      - "15671:15671"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+#    healthcheck:
+#        test: ["CMD", "curl", "-f", "http://localhost:15672"]
+#        interval: 30s
+#        timeout: 10s
+#        retries: 5
+    networks:
+      - default
+
+  redis:
+    platform: linux/amd64
+    labels:
+      NAME: "redis"
+    build:
+      context: ./redis
+      dockerfile: Dockerfile
+    # ports:
+    #   - "6380:6379"
+    # volumes:
+    #   - ./redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "$REDIS_PASSWORD", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - default
+
+  userservice:
+    platform: linux/amd64
+#    image: userservice
+    container_name: userservice
+    depends_on:
+      - rabbitmq
+      - sqlserver_db
+      - seq
+    build:
+      context: ../UniversityHelper-UserService
+      dockerfile: Dockerfile
+    environment:
+      - VIRTUAL_HOST=sub.domain-example.com
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - RabbitMQ_Host=rabbitmq
+      - RabbitMQ_VirtualHost=/
+      - RabbitMQ_Username=UniversityHelper.UserService
+      - RabbitMQ_Password=1234
+      - seqServerUrl=http://seq
+      - seqApiKey=9xXtgAh5JiClaAE1Fow5
+    # ports:
+    #   - 51736:80
+#      - 44344:443
+#    volumes:
+#      - storage:/storage
+#      - /var/run/docker.sock:/tmp/docker.sock:ro
+#      - certificates:/etc/certificates
+#      - ~/.aspnet/https:/root/.aspnet/https:ro
+#      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+    networks:
+      - default
+
+  rightsservice:
+    platform: linux/amd64
+#    image: rightsservice
+    container_name: rightsservice
+    depends_on:
+      - rabbitmq
+      - sqlserver_db
+      - seq
+    build:
+      context: ../UniversityHelper-RightsService
+      dockerfile: Dockerfile
+    environment:
+      - VIRTUAL_HOST=sub.domain-example.com
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - RabbitMQ_Host=rabbitmq
+      - RabbitMQ_VirtualHost=/
+      - RabbitMQ_Username=UniversityHelper.RightsService
+      - RabbitMQ_Password=1234
+      - seqServerUrl=http://seq
+      - seqApiKey=9xXtgAh5JiClaAE1Fow5
+    #   - 51737:80
+    #   - 44345:443
+    networks:
+      - default
+
+  authservice:
+    platform: linux/amd64
+#    image: authservice
+    container_name: authservice
+    depends_on:
+      - rabbitmq
+      - sqlserver_db
+      - seq
+      - userservice
+      - rightsservice
+    build:
+      context: ../UniversityHelper-AuthService
+      dockerfile: Dockerfile
+    environment:
+      - VIRTUAL_HOST=sub.domain-example.com
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - RabbitMQ_Host=rabbitmq
+      - RabbitMQ_VirtualHost=/
+      - RabbitMQ_Username=UniversityHelper.AuthService
+      - RabbitMQ_Password=1234
+      - seqServerUrl=http://seq
+      - seqApiKey=9xXtgAh5JiClaAE1Fow5
+    # ports:
+    #   - 51738:80
+    #   - 44346:443
+    networks:
+      - default
+
+  communityservice:
+    platform: linux/amd64
+#    image: rightsservice
+    container_name: communityservice
+    depends_on:
+      - rabbitmq
+      - sqlserver_db
+      - seq
+    build:
+      context: ../UniversityHelper-CommunityService
+      dockerfile: Dockerfile
+    environment:
+      - VIRTUAL_HOST=sub.domain-example.com
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - RabbitMQ_Host=rabbitmq
+      - RabbitMQ_VirtualHost=/
+      - RabbitMQ_Username=UniversityHelper.CommunityService
+      - RabbitMQ_Password=1234
+      - seqServerUrl=http://seq
+      - seqApiKey=9xXtgAh5JiClaAE1Fow5
+    # ports:
+    #   - 51737:80
+    #   - 44345:443
+    networks:
+      - default
+
+  feedbackservice:
+    platform: linux/amd64
+#    image: rightsservice
+    container_name: feedbackservice
+    depends_on:
+      - rabbitmq
+      - sqlserver_db
+      - seq
+    build:
+      context: ../UniversityHelper-FeedbackService
+      dockerfile: Dockerfile
+    environment:
+      - VIRTUAL_HOST=sub.domain-example.com
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - RabbitMQ_Host=rabbitmq
+      - RabbitMQ_VirtualHost=/
+      - RabbitMQ_Username=UniversityHelper.FeedbackService
+      - RabbitMQ_Password=1234
+      - seqServerUrl=http://seq
+      - seqApiKey=9xXtgAh5JiClaAE1Fow5
+    #   - 51737:80
+    #   - 44345:443
+    networks:
+      - default
+
+  mapservice:
+    platform: linux/amd64
+#    image: rightsservice
+    container_name: mapservice
+    depends_on:
+      - rabbitmq
+      - sqlserver_db
+      - seq
+    build:
+      context: ../UniversityHelper-MapService
+      dockerfile: Dockerfile
+    environment:
+      - VIRTUAL_HOST=sub.domain-example.com
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - RabbitMQ_Host=rabbitmq
+      - RabbitMQ_VirtualHost=/
+      - RabbitMQ_Username=UniversityHelper.MapService
+      - RabbitMQ_Password=1234
+      - seqServerUrl=http://seq
+      - seqApiKey=9xXtgAh5JiClaAE1Fow5
+    # ports:
+    #   - 51737:80
+    #   - 44345:443
+    networks:
+      - default    
+
+  nginx-proxy:
+    platform: linux/amd64
+#    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    depends_on:
+      - authservice
+      - communityservice
+      - feedbackservice
+      - mapservice
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+      - 81:81
+      - 82:82
+      - 83:83
+      - 84:84
+      - 85:85
+      - 443:443
+#    volumes:
+#      - /var/run/docker.sock:/tmp/docker.sock:ro
+#      - certificates:/etc/certificates
+    networks:
+      - default
+
+#volumes:
+#  storage:
+#  certificates:
+
+networks:
+  default:
+    name: nginx-proxy
+
+#secrets:
+#  server.cert:
+#    file: ./server.cert
+#  server.key:
+#    file: ./server.key
