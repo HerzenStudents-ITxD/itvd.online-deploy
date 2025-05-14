@@ -322,6 +322,8 @@ pelicanmagazineservice:
       - 83:83
       - 84:84
       - 85:85
+      - 86:86
+      - 87:87
       - 443:443
 #    volumes:
 #      - /var/run/docker.sock:/tmp/docker.sock:ro
