@@ -118,8 +118,8 @@ services:
       - seqServerUrl=http://seq
       - seqApiKey=9xXtgAh5JiClaAE1Fow5
     ports:
-      - 80:80
-#      - 44344:443
+      - 51700:80
+      - 44300:443
 #    volumes:
 #      - storage:/storage
 #      - /var/run/docker.sock:/tmp/docker.sock:ro
@@ -151,9 +151,8 @@ services:
       - seqServerUrl=http://seq
       - seqApiKey=9xXtgAh5JiClaAE1Fow5
     ports:
-      - 81:80
-    #   - 51737:80
-    #   - 44345:443
+      - 51701:80
+      - 44301:443
     networks:
       - default
 
@@ -181,10 +180,8 @@ services:
       - seqServerUrl=http://seq
       - seqApiKey=9xXtgAh5JiClaAE1Fow5
     ports:
-      - 82:80
-    # ports:
-    #   - 51738:80
-    #   - 44346:443
+      - 51702:80
+      - 44302:443
     networks:
       - default
 
@@ -210,10 +207,8 @@ services:
       - seqServerUrl=http://seq
       - seqApiKey=9xXtgAh5JiClaAE1Fow5
     ports:
-      - 83:80
-    # ports:
-    #   - 51737:80
-    #   - 44345:443
+      - 51703:80
+      - 44303:443
     networks:
       - default
 
@@ -239,9 +234,8 @@ services:
       - seqServerUrl=http://seq
       - seqApiKey=9xXtgAh5JiClaAE1Fow5
     ports:
-      - 84:80
-    #   - 51737:80
-    #   - 44345:443
+      - 51704:80
+      - 44304:443
     networks:
       - default
 
@@ -267,10 +261,8 @@ services:
       - seqServerUrl=http://seq
       - seqApiKey=9xXtgAh5JiClaAE1Fow5
     ports:
-      - 85:80
-    # ports:
-    #   - 51737:80
-    #   - 44345:443
+      - 51705:80
+      - 44305:443
     networks:
       - default
 
@@ -288,10 +280,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=https://+:443;http://+:80
     ports:
-      - 87:80
-    # ports:
-    #   - 51737:80
-    #   - 44345:443
+      - 51707:80
+      - 44307:443
     networks:
       - default      
 
@@ -309,10 +299,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=https://+:443;http://+:80
     ports:
-      - 86:80
-    # ports:
-    #   - 51737:80
-    #   - 44345:443
+      - 51706:80
+      - 44306:443
     networks:
       - default    
 
@@ -330,14 +318,14 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     ports:
-      # - 80:80
-      # - 81:81
-      # - 82:82
-      # - 83:83
-      # - 84:84
-      # - 85:85
-      # - 86:86
-      # - 87:87
+      - 80:80
+      - 81:81
+      - 82:82
+      - 83:83
+      - 84:84
+      - 85:85
+      - 86:86
+      - 87:87
       - 443:443
 #    volumes:
 #      - /var/run/docker.sock:/tmp/docker.sock:ro
