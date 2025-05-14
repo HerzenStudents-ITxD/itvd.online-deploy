@@ -283,24 +283,24 @@ services:
     networks:
       - default      
 
-pelicanmagazineservice:
-  platform: linux/amd64
-  #    image: rightsservice
-  container_name: pelicanmagazineservice
-  depends_on:
-    - sqlserver_db
-  build:
-    context: ../pelican-magazine-backend-2025s
-    dockerfile: Dockerfile
-  environment:
-    - VIRTUAL_HOST=sub.domain-example.com
-    - ASPNETCORE_ENVIRONMENT=Production
-    - ASPNETCORE_URLS=https://+:443;http://+:80
-  # ports:
-  #   - 51737:80
-  #   - 44345:443
-  networks:
-    - default    
+  pelicanmagazineservice:
+    platform: linux/amd64
+    #    image: rightsservice
+    container_name: pelicanmagazineservice
+    depends_on:
+      - sqlserver_db
+    build:
+      context: ../pelican-magazine-backend-2025s
+      dockerfile: Dockerfile
+    environment:
+      - VIRTUAL_HOST=sub.domain-example.com
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    # ports:
+    #   - 51737:80
+    #   - 44345:443
+    networks:
+      - default    
 
 
   nginx-proxy:
