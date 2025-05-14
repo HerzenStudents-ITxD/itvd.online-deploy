@@ -117,8 +117,8 @@ services:
       - RabbitMQ_Password=1234
       - seqServerUrl=http://seq
       - seqApiKey=9xXtgAh5JiClaAE1Fow5
-    # ports:
-    #   - 51736:80
+    ports:
+      - 80:80
 #      - 44344:443
 #    volumes:
 #      - storage:/storage
@@ -150,6 +150,8 @@ services:
       - RabbitMQ_Password=1234
       - seqServerUrl=http://seq
       - seqApiKey=9xXtgAh5JiClaAE1Fow5
+    ports:
+      - 81:80
     #   - 51737:80
     #   - 44345:443
     networks:
@@ -178,6 +180,8 @@ services:
       - RabbitMQ_Password=1234
       - seqServerUrl=http://seq
       - seqApiKey=9xXtgAh5JiClaAE1Fow5
+    ports:
+      - 82:80
     # ports:
     #   - 51738:80
     #   - 44346:443
@@ -205,6 +209,8 @@ services:
       - RabbitMQ_Password=1234
       - seqServerUrl=http://seq
       - seqApiKey=9xXtgAh5JiClaAE1Fow5
+    ports:
+      - 83:80
     # ports:
     #   - 51737:80
     #   - 44345:443
@@ -232,6 +238,8 @@ services:
       - RabbitMQ_Password=1234
       - seqServerUrl=http://seq
       - seqApiKey=9xXtgAh5JiClaAE1Fow5
+    ports:
+      - 84:80
     #   - 51737:80
     #   - 44345:443
     networks:
@@ -258,6 +266,8 @@ services:
       - RabbitMQ_Password=1234
       - seqServerUrl=http://seq
       - seqApiKey=9xXtgAh5JiClaAE1Fow5
+    ports:
+      - 85:80
     # ports:
     #   - 51737:80
     #   - 44345:443
@@ -277,6 +287,8 @@ services:
       - VIRTUAL_HOST=sub.domain-example.com
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=https://+:443;http://+:80
+    ports:
+      - 87:80
     # ports:
     #   - 51737:80
     #   - 44345:443
@@ -296,6 +308,8 @@ services:
       - VIRTUAL_HOST=sub.domain-example.com
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=https://+:443;http://+:80
+    ports:
+      - 86:80
     # ports:
     #   - 51737:80
     #   - 44345:443
@@ -316,14 +330,14 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     ports:
-      - 80:80
-      - 81:81
-      - 82:82
-      - 83:83
-      - 84:84
-      - 85:85
-      - 86:86
-      - 87:87
+      # - 80:80
+      # - 81:81
+      # - 82:82
+      # - 83:83
+      # - 84:84
+      # - 85:85
+      # - 86:86
+      # - 87:87
       - 443:443
 #    volumes:
 #      - /var/run/docker.sock:/tmp/docker.sock:ro
