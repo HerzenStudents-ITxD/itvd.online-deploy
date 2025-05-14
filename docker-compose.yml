@@ -262,7 +262,26 @@ services:
     #   - 51737:80
     #   - 44345:443
     networks:
-      - default    
+      - default
+
+    tprojservice:
+        platform: linux/amd64
+    #    image: rightsservice
+        container_name: tprojservice
+        depends_on:
+          - sqlserver_db
+        build:
+          context: ../var/www/technopark-proj-backend-2025s
+          dockerfile: Dockerfile
+        environment:
+          - VIRTUAL_HOST=sub.domain-example.com
+          - ASPNETCORE_ENVIRONMENT=Production
+          - ASPNETCORE_URLS=https://+:443;http://+:80
+        # ports:
+        #   - 51737:80
+        #   - 44345:443
+        networks:
+          - default      
 
   nginx-proxy:
     platform: linux/amd64
