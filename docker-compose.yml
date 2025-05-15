@@ -316,7 +316,7 @@ services:
       - PORT=8000
       - PYTHONUNBUFFERED=1
     ports:
-      - 51708:8000
+      - 51709:8000
     networks:
       - default
 
