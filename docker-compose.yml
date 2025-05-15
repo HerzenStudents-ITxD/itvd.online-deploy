@@ -29,6 +29,24 @@ services:
     networks:
       - default
 
+  postgres_db:
+     container_name: postgres_db
+     image: postgres
+     restart: always
+     user: postgres
+#     volumes:
+#       - db-data:/var/lib/postgresql/data
+     environment:
+       - POSTGRES_DB=example
+       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+     expose:
+       - 5432
+     healthcheck:
+       test: [ "CMD", "pg_isready" ]
+       interval: 10s
+       timeout: 5s
+       retries: 5
+
   seq:
     platform: linux/amd64
     image: datalust/seq:latest
@@ -283,7 +301,24 @@ services:
       - 51707:80
       - 44307:443
     networks:
-      - default      
+      - default
+
+  museumbackend:
+    container_name: museumbackend
+    build:
+      context: ../virtual-museum-backend-2025s
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres_db
+    environment:
+      - APP_ENV=production
+      - DATABASE_URL=postgresql+psycopg2://virtual_museum:123@localhost/postgres
+      - PORT=8000
+      - PYTHONUNBUFFERED=1
+    ports:
+      - 51709:8000
+    networks:
+      - default
 
   pelicanmagazineservice:
     platform: linux/amd64
@@ -326,6 +361,7 @@ services:
       - 85:85
       - 86:86
       - 87:87
+      - 88:88
       # - 443:443
 #    volumes:
 #      - /var/run/docker.sock:/tmp/docker.sock:ro
