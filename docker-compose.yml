@@ -118,8 +118,8 @@ services:
       - seqServerUrl=http://seq
       - seqApiKey=9xXtgAh5JiClaAE1Fow5
     ports:
-      - 51700:80
-      - 44300:443
+      - 51708:80
+      - 44308:443
 #    volumes:
 #      - storage:/storage
 #      - /var/run/docker.sock:/tmp/docker.sock:ro
