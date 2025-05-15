@@ -301,7 +301,24 @@ services:
       - 51707:80
       - 44307:443
     networks:
-      - default      
+      - default     
+
+  museumbackend:
+    container_name: museumbackend
+    build:
+      context: ../virtual-museum-backend-2025s
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres_db
+    environment:
+      - APP_ENV=production
+      - DATABASE_URL=postgresql+psycopg2://virtual_museum:123@localhost/postgres
+      - PORT=8000
+      - PYTHONUNBUFFERED=1
+    ports:
+      - 51708:8000
+    networks:
+      - default
 
   pelicanmagazineservice:
     platform: linux/amd64
@@ -344,6 +361,7 @@ services:
       - 85:85
       - 86:86
       - 87:87
+      - 88:88
       # - 443:443
 #    volumes:
 #      - /var/run/docker.sock:/tmp/docker.sock:ro
