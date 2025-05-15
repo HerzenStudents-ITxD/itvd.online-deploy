@@ -301,7 +301,7 @@ services:
       - 51707:80
       - 44307:443
     networks:
-      - default     
+      - default
 
   museumbackend:
     container_name: museumbackend
