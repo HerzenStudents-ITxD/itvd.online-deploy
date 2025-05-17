@@ -337,7 +337,26 @@ services:
       - 51706:80
       - 44306:443
     networks:
-      - default    
+      - default   
+
+ herzentutorback:
+    platform: linux/amd64
+    #    image: rightsservice
+    container_name: herzentutorback
+    depends_on:
+      - sqlserver_db
+    build:
+      context: ../tutor-admin-back
+      dockerfile: Dockerfile
+    environment:
+      - VIRTUAL_HOST=sub.domain-example.com
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    ports:
+      - 51710:80
+      - 44310:443
+    networks:
+      - default  
 
 
   nginx-proxy:
@@ -362,6 +381,7 @@ services:
       - 86:86
       - 87:87
       - 89:89
+      - 90:90
       # - 443:443
 #    volumes:
 #      - /var/run/docker.sock:/tmp/docker.sock:ro
