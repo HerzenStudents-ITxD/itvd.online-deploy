@@ -339,7 +339,7 @@ services:
     networks:
       - default   
 
- herzentutorback:
+  herzentutorback:
     platform: linux/amd64
     #    image: rightsservice
     container_name: herzentutorback
